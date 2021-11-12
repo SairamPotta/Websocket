@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Websocket</title>
+</head>
+
+<body>
+    <form id="formInfo">
+        <input type="text" id="message">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="info"></div>
+
+    <script>
+        let data = [];
+        const info = document.querySelector('#info');
+        const message = document.querySelector('#message');
+        const socket = new WebSocket('ws://localhost:3000');
+        socket.onopen = function (event) {
+            console.log("Successfully Connected");
+        }
+        socket.onmessage = function (response) {
+            const payload = JSON.parse(response.data);
+            data = [...data, payload.message];
+            let p = '';
+            data.forEach(ele => {
+                p += `<p>${ele}</p>`
+            });
+            info.innerHTML = p;
+        }
+
+        const form = document.querySelector('#formInfo');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            socket.send(JSON.stringify({ message: form.elements['message'].value }))
+        })
+    </script>
+</body>
+
+</html>
